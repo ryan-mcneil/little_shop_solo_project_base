@@ -4,10 +4,15 @@
 
 <p>
 <%= @user.name %><br/>
-<%= @user.default_address.street %><br/>
-<%= @user.default_address.city %>, <%= @user.default_address.state %><br/>
-<%= @user.default_address.zip %><br/>
 <%= @user.email %>
+
+<% if @user.addresses.size > 0 %>
+  <%= @user.default_address.street %><br/>
+  <%= @user.default_address.city %>, <%= @user.default_address.state %><br/>
+  <%= @user.default_address.zip %><br/>
+<% else %>
+  User has no addresses in system <br/>
+<% end %>
 </p>
 
 <p>Order Details</p>
