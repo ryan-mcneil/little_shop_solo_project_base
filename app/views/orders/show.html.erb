@@ -4,9 +4,9 @@
 
 <p>
 <%= @user.name %><br/>
-<%= @user.address %><br/>
-<%= @user.city %>, <%= @user.state %><br/>
-<%= @user.zip %><br/>
+<%= @user.default_address.street %><br/>
+<%= @user.default_address.city %>, <%= @user.default_address.state %><br/>
+<%= @user.default_address.zip %><br/>
 <%= @user.email %>
 </p>
 
@@ -36,20 +36,20 @@ Updated <%= distance_of_time_in_words(@order.created_at, Time.now) %> ago
     <td><%= number_to_currency(o_item.price) %></td>
     <td><%= number_to_currency(o_item.subtotal) %></td>
     <td>
-      <% if o_item.item.user == current_user && 
-            current_user.merchant? && 
+      <% if o_item.item.user == current_user &&
+            current_user.merchant? &&
             o_item.fulfilled == false &&
             o_item.quantity <= o_item.item.inventory
       %>
       <%= button_to 'fulfill item', order_item_fulfill_path(@order, o_item), method: :patch %>
-      <% elsif o_item.item.user == current_user && 
-            current_user.merchant? && 
+      <% elsif o_item.item.user == current_user &&
+            current_user.merchant? &&
             o_item.fulfilled == false &&
             o_item.quantity > o_item.item.inventory
       %>
       <span class="red">cannot fulfill, not enough inventory</span>
-      <% elsif o_item.item.user == current_user && 
-            current_user.merchant? && 
+      <% elsif o_item.item.user == current_user &&
+            current_user.merchant? &&
             o_item.fulfilled == true
       %>
       (item fulfilled)

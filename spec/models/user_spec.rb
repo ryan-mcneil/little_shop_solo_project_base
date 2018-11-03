@@ -4,16 +4,13 @@ RSpec.describe User, type: :model do
   describe 'Relationships' do
     it { should have_many(:orders) }
     it { should have_many(:items) }
+    it { should have_many(:addresses) }
   end
 
   describe 'Validations' do
     it { should validate_presence_of :email }
     it { should validate_uniqueness_of :email }
     it { should validate_presence_of :name }
-    # it { should validate_presence_of :address }
-    # it { should validate_presence_of :city }
-    # it { should validate_presence_of :state }
-    # it { should validate_presence_of :zip }
   end
 
   describe 'Class Methods' do
@@ -296,6 +293,17 @@ RSpec.describe User, type: :model do
       create(:fulfilled_order_item, quantity: 10, price: 10, order: order_3, item: item_2)
 
       expect(merchant_1.top_buyers(3)).to eq([user_2, user_1, user_3])
+    end
+
+    it '.default_address' do
+      user = create(:user)
+      address_1 = create(:address, default_add: false, user: user)
+      address_2 = create(:address, default_add: true, user: user)
+      address_3 = create(:address, default_add: false, user: user)
+
+      default_address = user.default_address
+
+      expect(default_address.nickname).to eq(address_2.nickname)
     end
   end
 end

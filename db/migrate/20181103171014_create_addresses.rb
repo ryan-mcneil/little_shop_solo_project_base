@@ -5,6 +5,8 @@ class CreateAddresses < ActiveRecord::Migration[5.1]
       t.string :city
       t.string :state
       t.string :zip
+      t.string :nickname
+      t.boolean :active, default: true
       t.boolean :default_add, default: false
       t.references :user, foreign_key: true
 

@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :orders
   has_many :items
+  has_many :addresses
 
   validates_presence_of :name #, :address, :city, :state, :zip
   validates :email, presence: true, uniqueness: true
@@ -140,4 +141,9 @@ class User < ApplicationRecord
   def self.slowest_merchants(quantity)
     merchant_by_speed(quantity, :desc)
   end
+
+  def default_address
+    addresses.where(default_add: true).first
+  end
+
 end
