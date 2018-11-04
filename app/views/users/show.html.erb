@@ -6,14 +6,15 @@
 
 <div class="profile-data">
   <table>
-    <tr><td>name:</td><td><%= @user.name %></td></tr>
-    <tr><td>email:</td><td><%= @user.email %></td></tr>
-    <tr id="default-address"><td>Addresses:    </td><td>
+    <tr><td>Name:</td><td><%= @user.name %></td></tr>
+    <tr><td>Email:</td><td><%= @user.email %></td></tr>
+    <tr id="default-address"><td>Addresses On File:    </td><td>
       <% if @user.addresses.size > 0 %>
         <%= @user.default_address.street %>
         <%= @user.default_address.city %>, <%= @user.default_address.state %>
         <%= @user.default_address.zip %>
-        (<%= @user.default_address.nickname %>) DEFAULT</td></tr>
+        (<%= @user.default_address.nickname %>) DEFAULT
+      <%= link_to "Edit Address", edit_address_path(@user.default_address) %> </td></tr>
       <% else %>
         User has no addresses in the system yet
       <% end %></td></tr>
@@ -23,10 +24,21 @@
           <%= address.street %>
           <%= address.city %>, <%= address.state %>
           <%= address.zip %>
-          (<%= address.nickname %>)</td></tr>
+          (<%= address.nickname %>)
+          <%= link_to "Edit Address", edit_address_path(address) %> </td></tr>
+        </td></tr>
         <% end %>
       <% end %>
   </table>
+
+  <div class="add-address">
+    <% if @user == current_user %>
+      <% path = new_profile_address_path %>
+    <% else %>
+      <% path = new_user_address_path(@user) %>
+    <% end %>
+    <%= link_to "Add New Address", path %>
+  </div>
 
   <p><%= link_to "Edit Profile Data", current_admin? ? edit_user_path(@user) : profile_edit_path %></p>
 </div>
