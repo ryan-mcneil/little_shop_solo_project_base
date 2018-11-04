@@ -161,4 +161,12 @@ class User < ApplicationRecord
     addresses.where(default_add: true).first
   end
 
+  def other_addresses
+    if addresses.size > 1
+      addresses - [default_address]
+    else
+      []
+    end
+  end
+
 end

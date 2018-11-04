@@ -8,13 +8,23 @@
   <table>
     <tr><td>name:</td><td><%= @user.name %></td></tr>
     <tr><td>email:</td><td><%= @user.email %></td></tr>
-    <tr><td>default address:</td><td>
+    <tr id="default-address"><td>Addresses:    </td><td>
       <% if @user.addresses.size > 0 %>
         <%= @user.default_address.street %>
         <%= @user.default_address.city %>, <%= @user.default_address.state %>
-        <%= @user.default_address.zip %></td></tr>
+        <%= @user.default_address.zip %>
+        (<%= @user.default_address.nickname %>) DEFAULT</td></tr>
       <% else %>
-        <p>User has no addresses in the system yet</p>
+        User has no addresses in the system yet
+      <% end %></td></tr>
+      <% if @user.other_addresses %>
+        <% @user.other_addresses.each do |address| %>
+        <tr id="other-address-<%= address.id %>"><td> </td><td>
+          <%= address.street %>
+          <%= address.city %>, <%= address.state %>
+          <%= address.zip %>
+          (<%= address.nickname %>)</td></tr>
+        <% end %>
       <% end %>
   </table>
 
