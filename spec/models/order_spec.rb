@@ -59,13 +59,13 @@ RSpec.describe Order, type: :model do
     it '.biggest_orders(3)' do
       item_1 = create(:item, user: @merchant)
 
-      order_1 = create(:completed_order, user: @user_1)
+      order_1 = create(:completed_order, user: @user_1, address: @address_1)
       create(:fulfilled_order_item, quantity: 100, order: order_1, item: item_1)
 
-      order_2 = create(:completed_order, user: @user_1)
+      order_2 = create(:completed_order, user: @user_1, address: @address_1)
       create(:fulfilled_order_item, quantity: 10000, order: order_2, item: item_1)
 
-      order_3 = create(:completed_order, user: @user_1)
+      order_3 = create(:completed_order, user: @user_1, address: @address_1)
       create(:fulfilled_order_item, quantity: 1000, order: order_3, item: item_1)
 
       expect(Order.biggest_orders(3)).to eq([order_2, order_3, order_1])
@@ -75,10 +75,12 @@ RSpec.describe Order, type: :model do
   describe 'Instance Methods' do
     it '.total' do
       @user = create(:user)
+      @address = create(:address, user: @user, default_add: true)
+
       @merchant = create(:merchant)
       @item_1, @item_2, @item_3 = create_list(:item, 3, user: @merchant)
 
-      @order_1 = create(:order, user: @user)
+      @order_1 = create(:order, user: @user, address: @address)
       oi_1 = create(:order_item, order: @order_1, item: @item_1)
       oi_2 = create(:order_item, order: @order_1, item: @item_2)
       oi_3 = create(:order_item, order: @order_1, item: @item_3)
