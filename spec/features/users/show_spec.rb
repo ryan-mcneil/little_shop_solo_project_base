@@ -24,7 +24,7 @@ RSpec.describe 'User Show Page, aka Profile Page' do
       expect(page).to_not have_link("View Personal Orders")
     end
     it 'should show the user a link to their personal orders if user has any' do
-      order = create(:order, user: @user)
+      order = create(:order, user: @user, address: @address)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
 
       visit profile_path
@@ -55,7 +55,7 @@ RSpec.describe 'User Show Page, aka Profile Page' do
       expect(page).to_not have_link("View Personal Orders")
     end
     it 'should show a link to orders if user has any' do
-      order = create(:order, user: @user)
+      order = create(:order, user: @user, address: @address)
       admin = create(:admin)
 
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(admin)
@@ -91,7 +91,7 @@ RSpec.describe 'User Show Page, aka Profile Page' do
         expect(page.status_code).to eq(404)
       end
       it 'should block access to /dashboard' do
-        order = create(:order, user: @user)
+        order = create(:order, user: @user, address: @address)
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
 
         visit dashboard_path
@@ -99,7 +99,7 @@ RSpec.describe 'User Show Page, aka Profile Page' do
         expect(page.status_code).to eq(404)
       end
       it 'should block access to /dashboard' do
-        order = create(:order, user: @user)
+        order = create(:order, user: @user, address: @address)
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
 
         visit dashboard_path

@@ -34,17 +34,32 @@ class User < ApplicationRecord
     items.sum(:inventory)
   end
 
-  def top_shipping(metric, quantity)
-    items
-      .joins(:orders)
-      .joins('join users on orders.user_id=users.id')
-      .where("orders.status != ?", :cancelled)
-      .where("order_items.fulfilled=?", true)
-      .order("count(users.#{metric}) desc")
-      .group("users.#{metric}")
-      .limit(quantity)
-      .pluck("users.#{metric}")
-  end
+
+
+    def top_shipping(metric, quantity)
+      items
+        .joins(:orders)
+        .joins('join users on orders.user_id=users.id')
+        .joins('join addresses on orders.address_id = addresses.id')
+        .where("orders.status != ?", :cancelled)
+        .where("order_items.fulfilled=?", true)
+        .order("count(addresses.#{metric}) desc")
+        .group("addresses.#{metric}")
+        .limit(quantity)
+        .pluck("addresses.#{metric}")
+    end
+
+    # def top_shipping(metric, quantity)
+    #   items
+    #     .joins(:orders)
+    #     .joins('join users on orders.user_id=users.id')
+    #     .where("orders.status != ?", :cancelled)
+    #     .where("order_items.fulfilled=?", true)
+    #     .order("count(users.#{metric}) desc")
+    #     .group("users.#{metric}")
+    #     .limit(quantity)
+    #     .pluck("users.#{metric}")
+    # end
 
   def top_3_shipping_states
     top_shipping(:state, 3)

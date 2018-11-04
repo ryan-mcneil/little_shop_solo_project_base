@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Address, type: :model do
   describe 'Relationships' do
     it { should belong_to(:user) }
+    it { should have_many(:orders) }
   end
 
   describe 'Validations' do

@@ -7,11 +7,11 @@ RSpec.describe 'Merchant Orders' do
     @merchant = create(:merchant)
     @item_1, @item_2, @item_3, @item_4, @item_5 = create_list(:item, 5, user: @merchant)
 
-    @order_1 = create(:order, user: @user)
+    @order_1 = create(:order, user: @user, address: @address_1)
     create(:order_item, order: @order_1, item: @item_1)
     create(:order_item, order: @order_1, item: @item_2)
 
-    @order_2 = create(:completed_order, user: @user)
+    @order_2 = create(:completed_order, user: @user, address: @address_1)
     create(:fulfilled_order_item, order: @order_2, item: @item_2)
     create(:fulfilled_order_item, order: @order_2, item: @item_3)
 
@@ -47,7 +47,7 @@ RSpec.describe 'Merchant Orders' do
       merchant_1, merchant_2 = create_list(:merchant, 2)
       item_1, item_2 = create_list(:item, 2, user: merchant_1)
       item_2.update(user: merchant_2)
-      order_1 = create(:order, user: @user)
+      order_1 = create(:order, user: @user, address: @address_1)
       oi_1 = create(:order_item, order: order_1, item: item_1)
       oi_2 = create(:order_item, order: order_1, item: item_2)
 
@@ -82,7 +82,7 @@ RSpec.describe 'Merchant Orders' do
     it 'blocks me from fulfilling an order if I do not have enough inventory' do
       merchant_1 = create(:merchant)
       item_1, item_2 = create_list(:item, 2, user: merchant_1)
-      order_1 = create(:order, user: @user)
+      order_1 = create(:order, user: @user, address: @address_1)
       oi_1 = create(:order_item, quantity: 100, order: order_1, item: item_1)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant_1)
 
