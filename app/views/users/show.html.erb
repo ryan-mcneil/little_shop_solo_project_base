@@ -13,11 +13,19 @@
         <%= @user.default_address.street %>
         <%= @user.default_address.city %>, <%= @user.default_address.state %>
         <%= @user.default_address.zip %>
-        (<%= @user.default_address.nickname %>) DEFAULT
-      <%= link_to "Edit Address", edit_address_path(@user.default_address) %> </td></tr>
+        (<%= @user.default_address.nickname %>)
+        DEFAULT
+        <%= link_to "Edit Address", edit_address_path(@user.default_address) %>
+        <% if @user.default_address.active %>
+          <%= button_to "Disable", address_path(@user.default_address, toggle: "user"), method: :patch %>
+        <% else %>
+
+        <% end %>
+    </td></tr>
       <% else %>
         User has no addresses in the system yet
-      <% end %></td></tr>
+      <% end %>
+    </td></tr>
       <% if @user.other_addresses %>
         <% @user.other_addresses.each do |address| %>
         <tr id="other-address-<%= address.id %>"><td> </td><td>
@@ -25,7 +33,8 @@
           <%= address.city %>, <%= address.state %>
           <%= address.zip %>
           (<%= address.nickname %>)
-          <%= link_to "Edit Address", edit_address_path(address) %> </td></tr>
+          <%= link_to "Edit Address", edit_address_path(address) %>
+        </td></tr>
         </td></tr>
         <% end %>
       <% end %>

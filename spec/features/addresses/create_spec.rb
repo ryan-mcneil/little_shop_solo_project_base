@@ -123,7 +123,7 @@ RSpec.describe 'Create Address' do
       fill_in :email, with: @user.email
       fill_in :password, with: @user.password
       click_button 'Log in'
-      
+
       visit profile_path
 
       within "#other-address-#{address_2.id}" do
@@ -149,7 +149,44 @@ RSpec.describe 'Create Address' do
       end
     end
 
+    it 'should be able to disable an address' do
+      address = create(:address, user: @user, default_add: true)
 
+      visit login_path
+      fill_in :email, with: @user.email
+      fill_in :password, with: @user.password
+      click_button 'Log in'
+
+      within '#default-address' do
+        expect(page).to_not have_button("Enable")
+        click_button "Disable"
+      end
+
+      within '#default-address' do
+        expect(page).to have_button("Enable")
+
+      end
+    end
+
+    xit 'should replace default' do
+      address = create(:address, user: @user, default_add: true)
+      address_2 = create(:address, user: @user, default_add: false, nickname: "work")
+
+      visit login_path
+      fill_in :email, with: @user.email
+      fill_in :password, with: @user.password
+      click_button 'Log in'
+
+      within '#default-address' do
+        expect(page).to_not have_button("Enable")
+        click_button "Disable"
+      end
+
+      within '#default-address' do
+        expect(page).to have_button("Enable")
+
+      end
+    end
   end
 
   context 'as an admin' do
@@ -209,6 +246,38 @@ RSpec.describe 'Create Address' do
       expect(page).to have_content("State can't be blank")
       expect(page).to have_content("Zip can't be blank")
       expect(page).to have_content("Nickname can't be blank")
+    end
+
+    it 'should be able to update a users address' do
+      visit login_path
+      fill_in :email, with: @admin.email
+      fill_in :password, with: @admin.password
+      click_button 'Log in'
+
+      visit user_path(@user)
+
+      within '#default-address' do
+        click_on "Edit Address"
+      end
+
+      expect(current_path).to eq(edit_address_path(@user_address))
+
+      fill_in :address_street, with: 'New Street'
+      fill_in :address_city, with: 'New City'
+      fill_in :address_state, with: 'New State'
+      fill_in :address_zip, with: 'New Zip'
+      fill_in :address_nickname, with: 'New Nickname'
+      click_button 'Update Address'
+
+      expect(current_path).to eq(user_path(@user))
+      within '#default-address' do
+        expect(page).to have_content('New Street')
+        expect(page).to have_content('New City')
+        expect(page).to have_content('New State')
+        expect(page).to have_content('New Zip')
+        expect(page).to have_content('New Nickname')
+        expect(page).to have_content("DEFAULT")
+      end
     end
   end
 end

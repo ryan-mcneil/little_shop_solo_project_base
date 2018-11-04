@@ -9,6 +9,7 @@ class AddressesController < ApplicationController
   end
 
   def update
+    binding.pry
     render file: 'errors/not_found', status: 404 if current_user.nil?
     @address = Address.find(params[:id])
     @user = @address.user
@@ -30,4 +31,15 @@ class AddressesController < ApplicationController
   def address_params
     params.require(:address).permit(:nickname, :street, :city, :state, :zip)
   end
+
+  def toggle_address(enable_disable)
+  if enable_disable == "Enable"
+    @item.update(active: true)
+    notice = "Item ##{params[:id]} now available for sale"
+  elsif enable_disable == "Disable"
+    @item.update(active: false)
+    notice = "Item ##{params[:id]} no longer for sale"
+  end
+  return notice
+end
 end
