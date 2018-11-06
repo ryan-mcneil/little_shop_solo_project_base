@@ -39,12 +39,26 @@
 </table>
 
 <%= button_to 'Empty Cart', cart_path, method: :delete %>
-
-<% if current_user %>
-  <%= button_to 'Check out', orders_path, method: :post %>
-<% else %>
-  <div id="must-log-in">
-  You must <%= link_to 'register', register_path %> or
-  <%= link_to 'log in', login_path %> to complete your purchase.
-  </div>
-<% end %>
+<br />
+<div id="addresses">
+  <% if current_user %>
+    <% if current_user.active_addresses.size == 0 %>
+    <p>You must have an enabled address to proceed with checkout.</p>
+    <p>Please click <%= link_to 'here', profile_path%> to manage addresses</p>
+    <% else %>
+      <%= form_for @order do |f| %>
+        <% current_user.active_addresses.each do |address| %>
+          (<%= f.label address.nickname %>)
+          <%= f.label address.street %>
+          <%= f.radio_button :address_id, address.id, checked: (address == current_user.active_addresses.first), id: "add-#{address.id}" %><br>
+        <% end %>
+        <%= f.submit'Check out' %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <div id="must-log-in">
+    You must <%= link_to 'register', register_path %> or
+    <%= link_to 'log in', login_path %> to complete your purchase.
+    </div>
+  <% end %>
+</div>

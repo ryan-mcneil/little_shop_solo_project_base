@@ -24,7 +24,7 @@ class OrdersController < ApplicationController
 
   def create
     items = Item.where(id: @cart.contents.keys)
-    order = Order.create!(user: current_user, status: :pending, address: current_user.default_address)
+    order = Order.create!(user: current_user, status: :pending, address: Address.find(params[:order][:address_id]))
     items.each do |item|
       order.order_items.create!(
         item: item,

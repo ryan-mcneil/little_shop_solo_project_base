@@ -8,7 +8,8 @@ RSpec.describe 'Items Index' do
       @active_item = create(:item, user: @merchant)
       @inactive_item = create(:inactive_item, name: 'inactive item 1')
       @user = create(:user)
-      @address = create(:address, user: @user, default_add: true)
+      @address_1 = create(:address, user: @user, default_add: true)
+      @address_2 = create(:address, user: @user, default_add: false)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user)
     end
     describe 'visiting /items' do
@@ -152,6 +153,37 @@ RSpec.describe 'Items Index' do
         expect(page).to have_content("Removed entire quantity of #{item_1.name} from your cart")
         expect(page).to have_content("Cart: 0")
         expect(page).to have_content("Grand Total: $0.00")
+      end
+
+      it 'should have the default address checked already' do
+        FactoryBot.reload
+        item_1, item_2 = create_list(:item, 2, user: @merchant)
+
+        visit item_path(item_1)
+        click_button("Add to Cart")
+        expect(page).to have_content("Cart: 1")
+
+        visit carts_path
+        within "#addresses" do
+          expect(find_field(id: "add-#{@address_1.id}")).to be_checked
+          expect(find_field(id: "add-#{@address_2.id}")).to_not be_checked
+        end
+      end
+
+      it 'should allow me to select a non default address for checkout' do
+        FactoryBot.reload
+        item_1, item_2 = create_list(:item, 2, user: @merchant)
+
+        visit item_path(item_1)
+        click_button("Add to Cart")
+        expect(page).to have_content("Cart: 1")
+
+        visit carts_path
+        choose(option: @address_2.id)
+        within "#addresses" do
+          expect(find_field(id: "add-#{@address_1.id}")).to_not be_checked
+          expect(find_field(id: "add-#{@address_2.id}")).to be_checked
+        end
       end
     end
   end
