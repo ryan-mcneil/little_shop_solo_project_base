@@ -82,3 +82,8 @@ div {
 label {
   display: block;
 }
+
+.all-inline {
+  display: flex;
+  white-space: nowrap;
+}

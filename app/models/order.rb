@@ -1,11 +1,12 @@
 class Order < ApplicationRecord
   belongs_to :user
+  belongs_to :address
   has_many :order_items
   has_many :items, through: :order_items
 
   validates_presence_of :status
 
-  def total 
+  def total
     oi = order_items.pluck("sum(quantity*price)")
     oi.sum
   end
@@ -14,12 +15,13 @@ class Order < ApplicationRecord
     User
       .joins('join orders on orders.user_id=users.id')
       .joins('join order_items on order_items.order_id=orders.id')
+      .joins(:addresses)
       .where("orders.status != ?", :cancelled)
       .where("order_items.fulfilled=?", true)
-      .order("count(users.#{metric}) desc")
-      .group("users.#{metric}")
+      .order("count(addresses.#{metric}) desc")
+      .group("addresses.#{metric}")
       .limit(quantity)
-      .pluck("users.#{metric}")
+      .pluck("addresses.#{metric}")
   end
 
   def self.top_buyers(quantity)

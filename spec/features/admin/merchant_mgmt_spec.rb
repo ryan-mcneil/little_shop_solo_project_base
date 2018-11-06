@@ -1,18 +1,20 @@
 require 'rails_helper'
 
-RSpec.describe 'Admin-only merchant management' do 
+RSpec.describe 'Admin-only merchant management' do
   before(:each) do
     @admin = create(:admin)
+    @address_admin = create(:address, user: @admin, default_add: true)
     @active_merchant = create(:merchant)
     @inactive_merchant = create(:inactive_merchant)
     @user = create(:user)
+    @address_user = create(:address, user: @user, default_add: true)
   end
   it 'allows admin to disable an enabled merchant account' do
     visit login_path
     fill_in :email, with: @admin.email
     fill_in :password, with: @admin.password
     click_button 'Log in'
-  
+
     visit merchants_path
 
     within "#merchant-#{@active_merchant.id}" do
@@ -54,7 +56,7 @@ RSpec.describe 'Admin-only merchant management' do
     fill_in :email, with: @inactive_merchant.email
     fill_in :password, with: @inactive_merchant.password
     click_button 'Log in'
-    
+
     expect(current_path).to eq(profile_path)
   end
 
@@ -68,7 +70,7 @@ RSpec.describe 'Admin-only merchant management' do
     visit merchant_path(@active_merchant)
     expect(page.status_code).to eq(404)
   end
-  describe 'redirects admin users to a proper page' do 
+  describe 'redirects admin users to a proper page' do
     scenario 'when a user path is really a merchant' do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
       visit user_path(@active_merchant.id)

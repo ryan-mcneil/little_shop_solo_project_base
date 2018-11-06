@@ -1,12 +1,16 @@
 require 'rails_helper'
 
-RSpec.describe 'Create Order' do 
+RSpec.describe 'Create Order' do
   context 'as a registered user' do
-    it 'allows me to check out and create an order' do 
+    it 'allows me to check out and create an order' do
       merchant = create(:merchant)
+      address_merchant = create(:address, user: merchant, default_add: true)
       active_item = create(:item, user: merchant)
       inactive_item = create(:inactive_item, name: 'inactive item 1')
       user = create(:user)
+      address_user = create(:address, user: user, default_add: true)
+
+
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
 
       item_1, item_2 = create_list(:item, 2, user: merchant)
@@ -29,15 +33,83 @@ RSpec.describe 'Create Order' do
       end
       expect(page).to have_content("Cart: 0")
     end
+
+    it 'should create the order with the default address' do
+      merchant = create(:merchant)
+      address_merchant = create(:address, user: merchant, default_add: true)
+      active_item = create(:item, user: merchant)
+      inactive_item = create(:inactive_item, name: 'inactive item 1')
+      user = create(:user)
+      address_user = create(:address, user: user, default_add: true)
+
+
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+      item_1, item_2 = create_list(:item, 2, user: merchant)
+      visit item_path(item_1)
+      click_button("Add to Cart")
+      visit item_path(item_2)
+      click_button("Add to Cart")
+
+      visit carts_path
+      click_button "Check out"
+
+      order = Order.last
+
+
+      within("#order-address-#{order.id}") do
+        expect(page).to have_content(address_user.nickname)
+        expect(page).to have_content(address_user.street)
+        expect(page).to have_content(address_user.city)
+        expect(page).to have_content(address_user.state)
+        expect(page).to have_content(address_user.zip)
+      end
+
+    end
+
+    it 'should create the order with a different address' do
+      merchant = create(:merchant)
+      address_merchant = create(:address, user: merchant, default_add: true)
+      active_item = create(:item, user: merchant)
+      inactive_item = create(:inactive_item, name: 'inactive item 1')
+      user = create(:user)
+      address_user = create(:address, user: user, default_add: true, nickname: "home")
+      address_user_2 = create(:address, user: user, nickname: "work")
+
+
+      allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
+
+      item_1, item_2 = create_list(:item, 2, user: merchant)
+      visit item_path(item_1)
+      click_button("Add to Cart")
+      visit item_path(item_2)
+      click_button("Add to Cart")
+
+      visit carts_path
+      choose(option: address_user_2.id)
+      click_button "Check out"
+      order = Order.last
+
+
+      within("#order-address-#{order.id}") do
+        expect(page).to have_content(address_user_2.nickname)
+        expect(page).to have_content(address_user_2.street)
+        expect(page).to have_content(address_user_2.city)
+        expect(page).to have_content(address_user_2.state)
+        expect(page).to have_content(address_user_2.zip)
+      end
+
+    end
     it 'allows me to cancel a pending order' do
       merchant = create(:merchant)
       user = create(:user)
       item_1, item_2 = create_list(:item, 2, user: merchant)
-      
-      order_1 = create(:order, user: user)
+      address = create(:address, user: user)
+
+      order_1 = create(:order, user: user, address: address)
       create(:order_item, order: order_1, item: item_1)
       create(:order_item, order: order_1, item: item_2)
-  
+
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(user)
       visit profile_orders_path
       expect(page).to_not have_content("no orders yet")
@@ -56,8 +128,9 @@ RSpec.describe 'Create Order' do
     it 'should mark a whole order as fulfilled when the last merchant fulfills their portions' do
       merchant = create(:merchant)
       user = create(:user)
+      address_user = create(:address, user: user, default_add: true)
       item_1 = create(:item, user: merchant)
-      order_1 = create(:order, user: user)
+      order_1 = create(:order, user: user, address: address_user)
       oi_1 = create(:order_item, order: order_1, item: item_1)
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)
 
@@ -75,16 +148,17 @@ RSpec.describe 'Create Order' do
       expect(page).to_not have_button('Cancel Order')
     end
   end
-  context 'mixed user login workflow' do 
+  context 'mixed user login workflow' do
     it 'a cancelled order with fulfilled items puts inventory back' do
       merchant = create(:merchant)
       user = create(:user)
+      address = create(:address, user: user, default_add: true)
       item_1, item_2 = create_list(:item, 2, user: merchant)
-      
-      order_1 = create(:order, user: user)
+
+      order_1 = create(:order, user: user, address: address)
       oi_1 = create(:order_item, order: order_1, item: item_1)
       create(:order_item, order: order_1, item: item_2)
-  
+
       # as a merchant, fulfill part of an order and verify
       # that inventory level has changed
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(merchant)

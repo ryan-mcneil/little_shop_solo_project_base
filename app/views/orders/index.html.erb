@@ -12,6 +12,7 @@ Sorry there are no orders yet.
       <% end %>
       <th>Status</th>
       <th>Details</th>
+      <th>Shipping Address</th>
       <th>Total</th>
       <th colspan="3"></th>
     </tr>
@@ -37,6 +38,12 @@ Sorry there are no orders yet.
             subtotal: <%= number_to_currency(o_item.subtotal) %>
             <br />
           <% end %>
+        </td>
+        <td id="order-address-<%= order.id %>">
+          <%= order.address.street %>
+          <%= order.address.city %>, <%= order.address.state %>
+          <%= order.address.zip %>
+          (<%= order.address.nickname %>)
         </td>
         <td>grand total: <%= number_to_currency(order.total) %></td>
         <td>

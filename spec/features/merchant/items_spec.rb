@@ -1,19 +1,19 @@
 require 'rails_helper'
 include ActionView::Helpers::NumberHelper
 
-RSpec.describe 'Merchant Items' do 
+RSpec.describe 'Merchant Items' do
   context 'as a merchant' do
-    before(:each) do 
+    before(:each) do
       @merchant = create(:merchant)
     end
-    describe 'when I visit /dashboard' do 
+    describe 'when I visit /dashboard' do
       it 'should show me a link to see my items for sale' do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
 
         visit dashboard_path
 
         click_link 'My Items for Sale'
-        
+
         expect(current_path).to eq(dashboard_items_path)
       end
     end
@@ -25,7 +25,7 @@ RSpec.describe 'Merchant Items' do
 
         visit dashboard_items_path
 
-        within "#item-#{item_1.id}" do 
+        within "#item-#{item_1.id}" do
           expect(page).to have_content("ID: #{item_1.id}")
           expect(page).to have_content(item_1.name)
           # code smell, had to hard-code an ID in the image filename for factorybot sequence
@@ -35,7 +35,7 @@ RSpec.describe 'Merchant Items' do
           expect(page).to have_link("Edit Item")
           expect(page).to have_button("Disable Item")
         end
-        within "#item-#{item_3.id}" do 
+        within "#item-#{item_3.id}" do
           expect(page).to have_button("Enable Item")
         end
       end
@@ -45,12 +45,12 @@ RSpec.describe 'Merchant Items' do
 
         visit dashboard_items_path
 
-        within "#item-#{item_1.id}" do 
+        within "#item-#{item_1.id}" do
           click_button "Disable Item"
         end
         expect(page).to have_content("Item #{item_1.id} is now disabled")
 
-        within "#item-#{item_1.id}" do 
+        within "#item-#{item_1.id}" do
           expect(page).to_not have_button("Disable Item")
           expect(page).to have_button("Enable Item")
         end
@@ -61,17 +61,17 @@ RSpec.describe 'Merchant Items' do
 
         visit dashboard_items_path
 
-        within "#item-#{item_1.id}" do 
+        within "#item-#{item_1.id}" do
           click_button "Enable Item"
         end
         expect(page).to have_content("Item #{item_1.id} is now enabled")
 
-        within "#item-#{item_1.id}" do 
+        within "#item-#{item_1.id}" do
           expect(page).to have_button("Disable Item")
           expect(page).to_not have_button("Enable Item")
         end
       end
-      it 'should allow me to add a new item' do 
+      it 'should allow me to add a new item' do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
         visit dashboard_items_path
         click_link "Add New Item"
@@ -85,7 +85,7 @@ RSpec.describe 'Merchant Items' do
 
         expect(current_path).to eq dashboard_items_path
         item = Item.last
-        within "#item-#{item.id}" do 
+        within "#item-#{item.id}" do
           expect(page).to have_content("ID: #{item.id}")
           expect(page).to have_content(item.name)
           expect(page.find("#item-image-#{item.id}")['src']).to have_content(item.image)
@@ -96,7 +96,7 @@ RSpec.describe 'Merchant Items' do
           expect(page).to have_button("Disable Item")
         end
       end
-      it 'should allow me to add a new item with a placeholder image' do 
+      it 'should allow me to add a new item with a placeholder image' do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
         visit dashboard_items_path
         click_link "Add New Item"
@@ -109,11 +109,11 @@ RSpec.describe 'Merchant Items' do
 
         expect(current_path).to eq dashboard_items_path
         item = Item.last
-        within "#item-#{item.id}" do 
+        within "#item-#{item.id}" do
           expect(page.find("#item-image-#{item.id}")['src']).to have_content('https://picsum.photos/200/300/?image=0&blur=true')
         end
       end
-      it 'should block me from adding a new item if form is blank' do 
+      it 'should block me from adding a new item if form is blank' do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
         visit dashboard_items_path
         click_link "Add New Item"
@@ -126,11 +126,11 @@ RSpec.describe 'Merchant Items' do
         expect(page).to have_content("Inventory can't be blank")
         expect(page).to have_content("Inventory is not a number")
       end
-      it 'should allow me to edit a new item' do 
+      it 'should allow me to edit a new item' do
         item = create(:item, user: @merchant)
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
         visit dashboard_items_path
-        within "#item-#{item.id}" do 
+        within "#item-#{item.id}" do
           click_link "Edit Item"
         end
 
@@ -143,18 +143,18 @@ RSpec.describe 'Merchant Items' do
 
         expect(current_path).to eq dashboard_items_path
         item = Item.find(item.id) # fetch from db
-        within "#item-#{item.id}" do 
+        within "#item-#{item.id}" do
           expect(page).to have_content('New Item Name')
           expect(page.find("#item-image-#{item.id}")['src']).to have_content('new-image.jpg')
           expect(page).to have_content("Price: #{number_to_currency(5)}")
           expect(page).to have_content("Inventory: 100")
         end
       end
-      it 'should block me from editing a new item if require fields are blank' do 
+      it 'should block me from editing a new item if require fields are blank' do
         item = create(:item, user: @merchant)
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@merchant)
         visit dashboard_items_path
-        within "#item-#{item.id}" do 
+        within "#item-#{item.id}" do
           click_link "Edit Item"
         end
         fill_in :item_name, with: ''

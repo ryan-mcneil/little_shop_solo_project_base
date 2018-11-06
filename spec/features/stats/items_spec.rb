@@ -4,6 +4,7 @@ RSpec.describe 'Item Stats' do
   context 'seeing stats when visiting /items' do
     before(:each) do
       @user = create(:user)
+      @address = create(:address, user: @user, default_add: true)
       @merchants = create_list(:merchant, 10)
       @item_1 = create(:item, user: @merchants[0])
       @item_2 = create(:item, user: @merchants[1])
@@ -17,7 +18,7 @@ RSpec.describe 'Item Stats' do
       @item_A = create(:item, user: @merchants[9])
     end
     it 'shows 5 most popular items' do
-      orders = create_list(:completed_order, 1, user: @user)
+      orders = create_list(:completed_order, 1, user: @user, address: @address)
       create(:fulfilled_order_item, order: orders[0], item: @item_9, quantity: 6)
       create(:fulfilled_order_item, order: orders[0], item: @item_5, quantity: 10)
       create(:fulfilled_order_item, order: orders[0], item: @item_2, quantity: 4)
@@ -37,7 +38,7 @@ RSpec.describe 'Item Stats' do
       end
     end
     it 'shows 5 most popular merchants' do
-      orders = create_list(:completed_order, 5, user: @user)
+      orders = create_list(:completed_order, 5, user: @user, address: @address)
       create(:fulfilled_order_item, order: orders[0], item: @item_9, quantity: 6)
       create(:fulfilled_order_item, order: orders[0], item: @item_8, quantity: 6)
       create(:fulfilled_order_item, order: orders[1], item: @item_5, quantity: 10)
@@ -62,7 +63,7 @@ RSpec.describe 'Item Stats' do
     end
     context 'merchants by speed' do
       before(:each) do
-        orders = create_list(:order, 5, user: @user)
+        orders = create_list(:order, 5, user: @user, address: @address)
         create(:fulfilled_order_item, order: orders[0], item: @item_1)
         create(:fulfilled_order_item, created_at: 3.seconds.ago, order: orders[0], item: @item_3)
         create(:fulfilled_order_item, created_at: 3.minutes.ago, order: orders[0], item: @item_5)

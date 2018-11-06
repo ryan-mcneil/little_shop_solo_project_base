@@ -1,18 +1,63 @@
 <h1>
-  Welcome, 
+  Welcome,
     <%= @user.name if current_user == @user %>
     <%= @user.name if current_admin? %>
 </h1>
 
 <div class="profile-data">
   <table>
-    <tr><td>name:</td><td><%= @user.name %></td></tr>
-    <tr><td>email:</td><td><%= @user.email %></td></tr>
-    <tr><td>address:</td><td>
-      <%= @user.address %>
-      <%= @user.city %>, <%= @user.state %>
-      <%= @user.zip %></td></tr>
+    <tr><td>Name:</td><td><%= @user.name %></td></tr>
+    <tr><td>Email:</td><td><%= @user.email %></td></tr>
+    <tr id="default-address" ><td>Addresses On File: </td>
+      <td style="display: flex; white-space: nowrap;">
+
+      <% if @user.addresses.size > 0 %>
+        <%= @user.default_address.street %>
+        <%= @user.default_address.city %>, <%= @user.default_address.state %>
+        <%= @user.default_address.zip %>
+        (<%= @user.default_address.nickname %>)
+        <%= link_to "  Edit Address  ", edit_address_path(@user.default_address), class: "inline-button" %>
+        DEFAULT
+        <% if @user.default_address.active %>
+          <%= button_to "Disable", address_path(@user.default_address, toggle: "disable"), method: :patch, class: "inline-button" %>
+        <% else %>
+          <%= button_to "Enable", address_path(@user.default_address, toggle: "enable"), method: :patch, class: "inline-button" %>
+        <% end %>
+
+    </td></tr>
+      <% else %>
+        User has no addresses in the system yet
+      <% end %>
+    </td></tr>
+      <% if @user.other_addresses %>
+        <% @user.other_addresses.each do |address| %>
+        <tr id="other-address-<%= address.id %>" >
+          <td> </td>
+          <td style="display: flex; white-space: nowrap;">
+          <%= address.street %>
+          <%= address.city %>, <%= address.state %>
+          <%= address.zip %>
+          (<%= address.nickname %>)
+          <%= link_to "  Edit Address  ", edit_address_path(address) %>
+          <%= button_to "Make Default", address_path(address, to_default: "true"), method: :patch, class: "inline-button" %>
+          <% if address.active %>
+            <%= button_to "Disable", address_path(address, toggle: "disable"), method: :patch, class: "inline-button" %>
+          <% else %>
+            <%= button_to "Enable", address_path(address, toggle: "enable"), method: :patch, class: "inline-button" %>
+          <% end %>
+        </td></tr>
+        <% end %>
+      <% end %>
   </table>
+
+  <div class="add-address">
+    <% if @user == current_user %>
+      <% path = new_profile_address_path %>
+    <% else %>
+      <% path = new_user_address_path(@user) %>
+    <% end %>
+    <%= link_to "Add New Address", path %>
+  </div>
 
   <p><%= link_to "Edit Profile Data", current_admin? ? edit_user_path(@user) : profile_edit_path %></p>
 </div>
@@ -27,5 +72,5 @@
   <% else %>
   <%= button_to "Enable", user_path(@user), method: :patch, params: { toggle: :enable } %>
   <% end %>
-  <%= button_to "Upgrade to Merchant", user_path(@user), method: :patch, params: { toggle: :role } %> 
+  <%= button_to "Upgrade to Merchant", user_path(@user), method: :patch, params: { toggle: :role } %>
 <% end %>

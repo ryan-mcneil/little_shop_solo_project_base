@@ -19,12 +19,13 @@ RSpec.describe Item, type: :model do
   describe 'Class Methods' do
     it '.popular_items(quantity)' do
       user = create(:user)
+      address = create(:address, user: user, default_add: true)
       merchants = create_list(:merchant, 2)
       item_1 = create(:item, user: merchants[0])
       item_2 = create(:item, user: merchants[0])
       item_3 = create(:item, user: merchants[1])
       item_4 = create(:item, user: merchants[1])
-      orders = create_list(:completed_order, 2, user: user)
+      orders = create_list(:completed_order, 2, user: user, address: address)
       create(:fulfilled_order_item, quantity: 10, item: item_1, order: orders[0])
       create(:fulfilled_order_item, quantity: 20, item: item_2, order: orders[0])
       create(:fulfilled_order_item, quantity: 40, item: item_3, order: orders[1])
