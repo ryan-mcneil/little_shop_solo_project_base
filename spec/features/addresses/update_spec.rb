@@ -152,7 +152,25 @@ RSpec.describe 'Update Address' do
       end
     end
 
-    
+    it 'should set a new default address' do
+      address = create(:address, user: @user, default_add: true)
+      address_2 = create(:address, user: @user, default_add: false, nickname: "work")
+
+      visit profile_path
+
+      within '#default-address' do
+        expect(page).to have_content("DEFAULT")
+      end
+
+      within "#other-address-#{address_2.id}" do
+        click_button "Make Default"
+      end
+      expect(page).to have_content("'#{address_2.nickname}' address is now your default")
+
+      within '#default-address' do
+        expect(page).to have_content("(#{address_2.nickname})")
+      end
+    end
   end
 
   context 'as an admin' do
@@ -215,6 +233,25 @@ RSpec.describe 'Update Address' do
         expect(page).to have_button("Disable")
       end
 
+    end
+
+    it 'should set a new default address for a user' do
+      @user_address_2 = create(:address, user: @user, default_add: false, nickname: "work")
+
+      visit user_path(@user)
+
+      within '#default-address' do
+        expect(page).to have_content("DEFAULT")
+      end
+
+      within "#other-address-#{@user_address_2.id}" do
+        click_button "Make Default"
+      end
+      expect(page).to have_content("'#{@user_address_2.nickname}' address is now your default")
+
+      within '#default-address' do
+        expect(page).to have_content("(#{@user_address_2.nickname})")
+      end
     end
 
   end

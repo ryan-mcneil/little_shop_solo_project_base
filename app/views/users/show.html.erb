@@ -17,14 +17,15 @@
         DEFAULT
         <%= link_to "Edit Address", edit_address_path(@user.default_address) %>
         <% if @user.default_address.active %>
-          <%= button_to "Disable", address_path(@user.default_address, toggle: "disable"), method: :patch %>
+          <%= button_to "Disable", address_path(@user.default_address, toggle: "disable"), method: :patch, class: "inline-button" %>
         <% else %>
-          <%= button_to "Enable", address_path(@user.default_address, toggle: "enable"), method: :patch %>
+          <%= button_to "Enable", address_path(@user.default_address, toggle: "enable"), method: :patch, class: "inline-button" %>
         <% end %>
     </td></tr>
       <% else %>
         User has no addresses in the system yet
       <% end %>
+    </span>
     </td></tr>
       <% if @user.other_addresses %>
         <% @user.other_addresses.each do |address| %>
@@ -33,11 +34,12 @@
           <%= address.city %>, <%= address.state %>
           <%= address.zip %>
           (<%= address.nickname %>)
+          <%= button_to "Make Default", address_path(address, to_default: "true"), method: :patch, class: "inline-button" %>
           <%= link_to "Edit Address", edit_address_path(address) %>
           <% if address.active %>
-            <%= button_to "Disable", address_path(address, toggle: "disable"), method: :patch %>
+            <%= button_to "Disable", address_path(address, toggle: "disable"), method: :patch, class: "inline-button" %>
           <% else %>
-            <%= button_to "Enable", address_path(address, toggle: "enable"), method: :patch %>
+            <%= button_to "Enable", address_path(address, toggle: "enable"), method: :patch, class: "inline-button" %>
           <% end %>
         </td></tr>
         <% end %>

@@ -169,4 +169,25 @@ class User < ApplicationRecord
     end
   end
 
+  def make_default(new_default)
+    prev_default = default_address
+    prev_default.update(default_add: false)
+    new_default.update(default_add: true)
+  end
+
+  def active_addresses
+    active_addresses = []
+    if default_address && default_address.active
+      active_addresses << default_address
+    end
+    if other_addresses.size > 0
+      other_addresses.each do |address|
+        if address.active
+          active_addresses << address
+        end
+      end
+    end
+    active_addresses
+  end
+
 end

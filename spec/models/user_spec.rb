@@ -346,5 +346,25 @@ RSpec.describe User, type: :model do
 
       expect(other_addresses).to eq([])
     end
+
+    it '.make_default' do
+      user = create(:user)
+      address = create(:address, user: user, default_add: true)
+      address_2 = create(:address, user: user, default_add: false, nickname: "work")
+
+      user.make_default(address_2)
+      expect(address.reload.default_add).to eq(false)
+      expect(address_2.reload.default_add).to eq(true)
+      expect(user.reload.default_address).to eq(address_2)
+    end
+
+    it '.active_addresses' do
+      user = create(:user)
+      address_1, address_2 = create_list(:address, 2, user: user, default_add: false)
+      address_3 = create(:address, user: user, default_add: false, active: false)
+      address_4 = create(:address, user: user, default_add: true)
+
+      expect(user.active_addresses).to eq([address_4, address_1, address_2])
+    end
   end
 end

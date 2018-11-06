@@ -19,6 +19,10 @@ class AddressesController < ApplicationController
       @address.save
       flash[:success] = "'#{@address.nickname}' address is now #{params[:toggle]}d"
       redirect_to current_admin? ? user_path(@address.user) : profile_path
+    elsif params[:to_default]
+      @user.make_default(@address)
+      flash[:success] = "'#{@address.nickname}' address is now your default"
+      redirect_to current_admin? ? user_path(@address.user) : profile_path
     else
       @address.update(address_params)
       if @address.save
