@@ -17,9 +17,9 @@
         DEFAULT
         <%= link_to "Edit Address", edit_address_path(@user.default_address) %>
         <% if @user.default_address.active %>
-          <%= button_to "Disable", address_path(@user.default_address, toggle: "user"), method: :patch %>
+          <%= button_to "Disable", address_path(@user.default_address, toggle: "disable"), method: :patch %>
         <% else %>
-
+          <%= button_to "Enable", address_path(@user.default_address, toggle: "enable"), method: :patch %>
         <% end %>
     </td></tr>
       <% else %>
@@ -34,7 +34,11 @@
           <%= address.zip %>
           (<%= address.nickname %>)
           <%= link_to "Edit Address", edit_address_path(address) %>
-        </td></tr>
+          <% if address.active %>
+            <%= button_to "Disable", address_path(address, toggle: "disable"), method: :patch %>
+          <% else %>
+            <%= button_to "Enable", address_path(address, toggle: "enable"), method: :patch %>
+          <% end %>
         </td></tr>
         <% end %>
       <% end %>

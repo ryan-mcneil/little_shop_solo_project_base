@@ -9,21 +9,25 @@ class AddressesController < ApplicationController
   end
 
   def update
-    binding.pry
     render file: 'errors/not_found', status: 404 if current_user.nil?
     @address = Address.find(params[:id])
     @user = @address.user
-    @address.update(address_params)
-    if @address.save && current_admin?
-      flash[:success] = "Address Updated"
-      redirect_to user_path(@address.user)
-    elsif @address.save
-      flash[:success] = "Address Updated"
-      redirect_to profile_path
+    if params[:toggle]
+      @address.active = false if params[:toggle] == "disable"
+      @address.active = true if params[:toggle] == "enable"
+      # if @address == @user.default_address && params[:toggle] == "disable" && @user.other_addresses.count > 1
+      @address.save
+      flash[:success] = "'#{@address.nickname}' address is now #{params[:toggle]}d"
+      redirect_to current_admin? ? user_path(@address.user) : profile_path
     else
-      render :'addresses/edit'
+      @address.update(address_params)
+      if @address.save
+        flash[:success] = "Address Updated"
+        redirect_to current_admin? ? user_path(@address.user) : profile_path
+      else
+        render :'addresses/edit'
+      end
     end
-
   end
 
   private
