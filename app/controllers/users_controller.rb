@@ -10,7 +10,6 @@ class UsersController < ApplicationController
       @user = current_user
     else # '/users/:id
       if current_admin?
-
         @user = User.find_by(slug: params[:slug])
         if @user.merchant?
           redirect_to merchant_path(@user.id)
