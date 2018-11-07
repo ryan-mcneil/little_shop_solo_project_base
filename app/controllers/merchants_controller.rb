@@ -4,13 +4,12 @@ class MerchantsController < ApplicationController
       @merchants = User.where(role: :merchant).order(:name)
     else
       @merchants = User.where(role: :merchant, active: true).order(:name)
-    end 
+    end
   end
 
   def show
     render file: 'errors/not_found', status: 404 unless current_user
-
-    @merchant = User.find(params[:id])
+    @merchant = User.find_by(slug: params[:slug])
     if current_admin?
       @orders = current_user.merchant_orders
       if @merchant.user?

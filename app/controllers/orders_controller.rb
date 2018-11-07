@@ -38,7 +38,7 @@ class OrdersController < ApplicationController
   end
 
   def update
-    user = User.find(params[:user_id])
+    user = User.find_by(slug: params[:user_slug])
     render file: 'errors/not_found', status: 404 unless current_admin? || current_user == user
     order = Order.find(params[:id])
     render file: 'errors/not_found', status: 404 unless order

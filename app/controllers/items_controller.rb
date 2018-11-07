@@ -10,25 +10,26 @@ class ItemsController < ApplicationController
 
   def new
     @item = Item.new
-    @merchant = User.find(params[:merchant_id])
+    @merchant = User.find_by(slug: params[:merchant_slug])
     @form_url = merchant_items_path
   end
 
   def show
-    @item = Item.find(params[:id])
+    @item = Item.find_by(slug: params[:slug])
   end
 
   def edit
+
     render file: 'errors/not_found', status: 404 if current_user.nil?
-    @merchant = User.find(params[:merchant_id])
+    @merchant = User.find_by(slug: params[:merchant_slug])
     render file: 'errors/not_found', status: 404 unless current_admin? || current_user == @merchant
-    @item = Item.find(params[:id])
+    @item = Item.find_by(slug: params[:slug])
     @form_url = merchant_item_path(@merchant, @item)
   end
 
   def create
     render file: 'errors/not_found', status: 404 if current_user.nil?
-    @merchant = User.find(params[:merchant_id])
+    @merchant = User.find_by(slug: params[:merchant_slug])
     render file: 'errors/not_found', status: 404 unless current_admin? || current_user == @merchant
 
     @item = @merchant.items.create(item_params)
@@ -47,12 +48,17 @@ class ItemsController < ApplicationController
 
   def update
     render file: 'errors/not_found', status: 404 if current_user.nil?
-    @merchant = User.find(params[:merchant_id])
+    @merchant = User.find_by(slug: params[:merchant_slug])
     item_id = :item_id
     if params[:id]
       item_id = :id
     end
-    @item = Item.find(params[item_id])
+    if params[:slug]
+      @item = Item.find_by(slug: params[:slug])
+    else
+      @item = Item.find(params[:item_slug])
+    end
+
     render file: 'errors/not_found', status: 404 unless current_admin? || current_user == @merchant
 
     if request.fullpath.split('/')[-1] == 'disable'

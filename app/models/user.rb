@@ -10,6 +10,8 @@ class User < ApplicationRecord
 
   enum role: %w(user merchant admin)
 
+  before_create :generate_slug
+
   def merchant_orders(status=nil)
     if status.nil?
       Order.distinct.joins(:items).where('items.user_id=?', self.id)
@@ -189,5 +191,24 @@ class User < ApplicationRecord
     end
     active_addresses
   end
+
+
+  def to_param
+    slug
+  end
+
+  private
+
+  def generate_slug
+    slugname = name.downcase.parameterize if name
+    if Item.where(slug:slugname).count > 0
+      add = Item.where(slug:slugname).count + 1
+      slugname = slugname + "-" + add.to_s
+      self.slug = slugname
+    else
+      self.slug = slugname
+    end
+  end
+
 
 end
