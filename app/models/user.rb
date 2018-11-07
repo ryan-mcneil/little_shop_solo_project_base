@@ -200,13 +200,11 @@ class User < ApplicationRecord
   private
 
   def generate_slug
-    slugname = name.downcase.parameterize if name
-    if Item.where(slug:slugname).count > 0
-      add = Item.where(slug:slugname).count + 1
-      slugname = slugname + "-" + add.to_s
-      self.slug = slugname
-    else
-      self.slug = slugname
+    if name
+      loop do
+        self.slug = name.downcase.delete(" ") + rand(1000..9999).to_s
+        break unless User.where(slug: self.slug).exists?
+      end
     end
   end
 
