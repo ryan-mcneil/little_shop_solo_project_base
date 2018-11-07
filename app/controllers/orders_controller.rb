@@ -6,8 +6,8 @@ class OrdersController < ApplicationController
       else
         @orders = current_user.orders.where.not(status: :disabled)
       end
-    elsif params[:user_id] && request.fullpath == "/users/#{params[:user_id]}/orders"
-      @user = User.find(params[:user_id])
+    elsif params[:user_slug] && request.fullpath == "/users/#{params[:user_slug]}/orders"
+      @user = User.find_by(slug: params[:user_slug])
       if current_admin?
         @orders = Order.all
       # elsif @user == current_user
@@ -38,7 +38,7 @@ class OrdersController < ApplicationController
   end
 
   def update
-    user = User.find(params[:user_id])
+    user = User.find_by(slug: params[:user_slug])
     render file: 'errors/not_found', status: 404 unless current_admin? || current_user == user
     order = Order.find(params[:id])
     render file: 'errors/not_found', status: 404 unless order

@@ -34,7 +34,6 @@ RSpec.describe 'User Order pages' do
       scenario 'allows admin user to see all personal orders for a user' do
         allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
         visit user_orders_path(@user)
-
         within("#order-#{@order_1.id}") do
           @order_1.order_items.each do |o_item|
             within("#order-details-#{@order_1.id}") do

@@ -4,13 +4,13 @@ class Profile::AddressesController < ApplicationController
     # render file: 'errors/not_found', status: 404 unless current_user
     @user = current_user
     if current_admin? && params[:user_id]
-      @user = User.find(params[:user_id])
+      @user = User.find_by(slug: params[:user_id])
     end
     @address = Address.new
   end
 
   def create
-    @user = User.find(params[:user_id])
+    @user = User.find_by(slug: params[:user_id])
     @address = @user.addresses.create(address_params)
     if @user.addresses.size == 1
       @address.default_add = true

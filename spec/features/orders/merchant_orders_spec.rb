@@ -101,6 +101,8 @@ RSpec.describe 'Merchant Orders' do
 
       click_link "Edit Profile Data"
       expect(current_path).to eq(edit_user_path(@merchant))
+      # expect(current_path).to eq("/user/#{@merchant.slug}/edit")
+
     end
     it 'sees a link to view dashboard orders if there are any orders' do
       allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@admin)
